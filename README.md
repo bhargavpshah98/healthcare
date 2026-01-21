@@ -14,12 +14,33 @@ The pipeline:
 ## Architecture
 S3 (raw) → AWS Glue Job → S3 (processed)
 
-## Tech Stack
-- AWS S3
-- AWS Glue (Spark, Python)
-- AWS IAM
-- Terraform
-- AWS CLI
+## Testing
+The project includes unit and integration tests to ensure reliability.
+
+### Prerequisites
+- Python 3.8+
+- Install test dependencies: `pip install -r requirements-test.txt`
+
+### Run Tests
+From the repo root:
+
+```bash
+# Run all tests
+pytest tests/
+
+# Run with coverage
+pytest --cov=glue tests/
+
+# Run specific test file
+pytest tests/test_transform.py
+```
+
+### Test Coverage
+- **Unit Tests**: Test utility functions like column normalization
+- **Data Quality Tests**: Validate data transformations, type casting, and aggregations using PySpark
+- **Integration Tests**: Ensure end-to-end logic works correctly
+
+Tests use sample data and mock Spark sessions where possible to avoid requiring full AWS environment.
 
 ## Buckets
 - Raw bucket: `healthcare-raw-<account-id>`
