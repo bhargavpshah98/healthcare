@@ -26,9 +26,3 @@ S3 (raw) → AWS Glue Job → S3 (processed)
 ## Dataset
 Public Iris dataset (CSV):
 https://github.com/mwaskom/seaborn-data/blob/master/iris.csv
-
-## Deployment Steps
-
-### 1. Configure AWS credentials
-```bash
-aws configure
