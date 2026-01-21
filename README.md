@@ -11,9 +11,26 @@ The pipeline:
 - Catalogs the data in AWS Glue for querying via Athena
 - Runs nightly via scheduled trigger for automated processing
 
-## Data Validation, Error Handling, and Logging
+## Security and Permissions
 
-The Glue ETL job includes comprehensive validation, error handling, and logging to ensure reliable data processing:
+The infrastructure is configured with least-privilege IAM permissions and secure S3 bucket settings:
+
+### S3 Bucket Permissions
+- **Private Access**: All buckets have public access blocked (no public ACLs, policies, or bucket-level access)
+- **Encryption**: Default AES256 encryption for all objects
+- **Access Control**: Access restricted to authorized IAM roles only
+
+### Glue Job Permissions
+- **IAM Role**: Dedicated role (`healthcare-glue-role`) with assume role policy for Glue service
+- **Service Permissions**: `AWSGlueServiceRole` policy provides:
+  - CloudWatch Logs access for monitoring
+  - Glue catalog and job execution permissions
+  - Basic AWS service access
+- **S3 Access Policy**: Custom policy with least privilege:
+  - List buckets (for validation)
+  - Read objects from raw bucket
+  - Full access (read/write/delete) to processed bucket
+- **No Over-Provisioning**: Permissions scoped to specific buckets, not account-wide access
 
 ### Data Validation
 - **Column Existence Check**: Validates that all required columns are present in the input CSV
