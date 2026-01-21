@@ -27,11 +27,13 @@ S3 (raw) → AWS Glue Job → S3 (processed)
 This project uses publicly available healthcare insurance data published by
 the U.S. Centers for Medicare & Medicaid Services (CMS).
 
-Dataset:
-Medicare Physician and Other Practitioners by Provider and Service (CSV)
+Dataset: Medicare Physician & Other Practitioners - by Provider and Service (2023)
 
-Source:
-https://data.cms.gov/
+Source: https://data.cms.gov/provider-summary-by-type-of-service/medicare-physician-other-practitioners/medicare-physician-other-practitioners-by-provider-and-service
+
+**Note**: The CSV file is not included in this repository due to size constraints (GitHub limits files to 100MB). You must download it separately.
+
+Download the CSV file from the source link above (select "Download" or export as CSV). Save it as `data/medicare_claims.csv` in the project root.
 
 ## Deploy / Run
 

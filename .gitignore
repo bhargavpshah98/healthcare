@@ -4,3 +4,4 @@ terraform.tfstate.backup
 *.tfvars
 .env
 .DS_Store
+data/
