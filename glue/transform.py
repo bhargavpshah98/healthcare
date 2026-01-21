@@ -2,8 +2,7 @@ import sys
 from awsglue.utils import getResolvedOptions
 from awsglue.context import GlueContext
 from pyspark.context import SparkContext
-from pyspark.sql.functions import col
-from pyspark.sql.functions import lower, trim, regexp_replace
+from pyspark.sql.functions import col, lower, trim, regexp_replace, sum, avg
 
 args = getResolvedOptions(
     sys.argv,
@@ -96,10 +95,36 @@ df_clean = (
         "total_medicare_payment_amount",
         col("total_medicare_payment_amount").cast("double")
     )
+    .withColumn(
+        "tot_benes",
+        col("tot_benes").cast("bigint")
+    )
+    .withColumn(
+        "tot_srvcs",
+        col("tot_srvcs").cast("double")
+    )
+    .withColumn(
+        "tot_bene_day_srvcs",
+        col("tot_bene_day_srvcs").cast("double")
+    )
 )
 
+# Aggregate by provider (npi) to calculate totals per provider
+df_aggregated = df_clean.groupBy("npi", "provider_type").agg(
+    sum("tot_benes").alias("total_beneficiaries"),
+    sum("tot_srvcs").alias("total_services"),
+    sum("tot_bene_day_srvcs").alias("total_beneficiary_days"),
+    sum("total_submitted_charge_amount").alias("total_submitted_charges"),
+    sum("total_medicare_payment_amount").alias("total_medicare_payments"),
+    avg("total_submitted_charge_amount").alias("avg_submitted_charge_per_service"),
+    avg("total_medicare_payment_amount").alias("avg_medicare_payment_per_service")
+)
 
-# Write to Parquet (better format for analytics)
-df_clean.write.mode("overwrite").parquet(output_path)
+# Write detailed Parquet
+df_clean.write.mode("overwrite").parquet(output_path + "/detailed")
 
-print(f"Wrote Parquet output to: {output_path}")
+# Write aggregated Parquet
+df_aggregated.write.mode("overwrite").parquet(output_path + "/aggregated")
+
+print(f"Wrote detailed Parquet to: {output_path}/detailed")
+print(f"Wrote aggregated Parquet to: {output_path}/aggregated")

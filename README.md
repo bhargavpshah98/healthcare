@@ -1,13 +1,15 @@
 # Healthcare ETL Pipeline (AWS + Terraform)
 
 ## Overview
-This project implements a simple end-to-end ETL pipeline using AWS services and Terraform.
+This project implements a comprehensive ETL pipeline using AWS services and Terraform.
 
 The pipeline:
 - Extracts a public CSV dataset
 - Stores it in Amazon S3 (raw layer)
-- Transforms the data using AWS Glue (PySpark)
-- Writes optimized Parquet output to S3 (processed layer)
+- Transforms the data using AWS Glue (PySpark) with data validation, cleaning, and aggregations
+- Writes optimized Parquet output to S3 (processed layer) in detailed and aggregated formats
+- Catalogs the data in AWS Glue for querying via Athena
+- Runs nightly via scheduled trigger for automated processing
 
 ## Architecture
 S3 (raw) → AWS Glue Job → S3 (processed)
@@ -87,15 +89,17 @@ aws glue start-job-run --job-name "$GLUE_JOB_NAME"
 
 ### 4) Verify output
 The job writes Parquet to:
-- `s3://$PROCESSED_BUCKET/output/medicare_claims/`
+- `s3://$PROCESSED_BUCKET/output/detailed/` (full detailed data)
+- `s3://$PROCESSED_BUCKET/output/aggregated/` (aggregated by provider)
 
 List outputs:
 
 ```bash
-aws s3 ls "s3://$PROCESSED_BUCKET/output/medicare_claims/" --recursive
+aws s3 ls "s3://$PROCESSED_BUCKET/output/detailed/" --recursive
+aws s3 ls "s3://$PROCESSED_BUCKET/output/aggregated/" --recursive
 ```
 
-The data is also cataloged in AWS Glue as a table:
+The detailed data is also cataloged in AWS Glue as a table:
 - Database: `healthcare_db`
 - Table: `medicare_claims`
 
@@ -104,6 +108,8 @@ You can query it using Amazon Athena:
 ```sql
 SELECT * FROM healthcare_db.medicare_claims LIMIT 10;
 ```
+
+The job is scheduled to run nightly at 2 AM UTC via AWS Glue Trigger.
 
 ### Optional: Run from AWS Console
 - Go to **AWS Glue → ETL jobs →** select the job output as `glue_job_name` → **Run**

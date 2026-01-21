@@ -2,6 +2,16 @@ resource "aws_glue_catalog_database" "healthcare_db" {
   name = "${var.project_name}_db"
 }
 
+resource "aws_glue_trigger" "nightly_etl" {
+  name     = "${var.project_name}-nightly-etl-trigger"
+  type     = "SCHEDULED"
+  schedule = "cron(0 2 * * ? *)"  # Run daily at 2 AM UTC
+
+  actions {
+    job_name = aws_glue_job.healthcare_etl.name
+  }
+}
+
 resource "aws_glue_catalog_table" "medicare_claims" {
   name          = "medicare_claims"
   database_name = aws_glue_catalog_database.healthcare_db.name
@@ -15,7 +25,7 @@ resource "aws_glue_catalog_table" "medicare_claims" {
   }
 
   storage_descriptor {
-    location      = "s3://${aws_s3_bucket.processed.bucket}/output/medicare_claims/"
+    location      = "s3://${aws_s3_bucket.processed.bucket}/output/detailed/"
     input_format  = "org.apache.hadoop.mapred.TextInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
 
