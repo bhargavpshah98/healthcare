@@ -1,5 +1,8 @@
 # Healthcare ETL Pipeline (AWS + Terraform)
 
+## Project Summary
+This project implements a comprehensive, production-ready ETL pipeline for processing Medicare healthcare claims data using AWS services and infrastructure-as-code with Terraform. The pipeline extracts publicly available CSV data from S3, performs robust data validation and transformation in AWS Glue with PySpark (including column normalization, type casting, null filtering, and provider-level aggregations), and loads optimized Parquet outputs to S3 while cataloging them in AWS Glue for Athena querying. Enhanced with automated nightly scheduling via Glue triggers, comprehensive testing suite (unit and integration tests), enterprise-grade security (least-privilege IAM roles and private S3 buckets), and full observability through CloudWatch logging and monitoring, the solution ensures reliable, scalable healthcare data processing with complete error handling and data quality assurance.
+
 ## Overview
 This project implements a comprehensive ETL pipeline using AWS services and Terraform.
 
