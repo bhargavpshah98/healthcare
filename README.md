@@ -11,8 +11,31 @@ The pipeline:
 - Catalogs the data in AWS Glue for querying via Athena
 - Runs nightly via scheduled trigger for automated processing
 
-## Architecture
-S3 (raw) → AWS Glue Job → S3 (processed)
+## Data Validation, Error Handling, and Logging
+
+The Glue ETL job includes comprehensive validation, error handling, and logging to ensure reliable data processing:
+
+### Data Validation
+- **Column Existence Check**: Validates that all required columns are present in the input CSV
+- **Null Value Filtering**: Removes rows with null values in critical columns (npi, provider_type, amounts)
+- **Type Casting**: Ensures numeric columns are properly cast to appropriate types (double, bigint)
+- **HTTP Error Detection**: Checks input file for HTTP error responses (e.g., 404) instead of valid CSV data
+
+### Error Handling
+- **Missing Columns**: Raises `ValueError` with detailed message if required columns are missing
+- **Invalid Data Format**: Fails gracefully with descriptive error messages for malformed input
+- **Execution Failures**: Leverages Glue's built-in retry mechanisms and failure notifications
+
+### Logging
+- **CloudWatch Integration**: All job logs are sent to AWS CloudWatch Logs for monitoring
+- **Continuous Logging**: Enabled for real-time log streaming during job execution
+- **Execution Metrics**: Tracks job performance, errors, and completion status
+- **Output Confirmation**: Logs successful write operations with S3 paths
+
+### Monitoring
+- View logs in AWS CloudWatch Logs under `/aws-glue/jobs/`
+- Set up CloudWatch alarms for job failures
+- Use Glue job metrics for performance monitoring
 
 ## Testing
 The project includes unit and integration tests to ensure reliability.

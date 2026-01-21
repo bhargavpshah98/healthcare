@@ -47,6 +47,8 @@ if len(sample_lines) == 0 or likely_http_error:
 # Read CSV with header
 df = spark.read.option("header", "true").csv(input_path)
 
+print(f"Loaded {df.count()} rows from input CSV")
+
 def normalize_col_name(name: str) -> str:
     return (
         name.strip()
@@ -84,6 +86,7 @@ if missing:
 for c in required_cols:
     df = df.filter(col(c).isNotNull())
 
+print(f"After null filtering: {df.count()} rows remaining")
 
 # Example transform: cast numeric columns to double
 df_clean = (
